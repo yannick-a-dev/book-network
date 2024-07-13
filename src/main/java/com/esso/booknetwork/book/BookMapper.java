@@ -1,5 +1,6 @@
 package com.esso.booknetwork.book;
 
+import com.esso.booknetwork.file.FileUtils;
 import com.esso.booknetwork.history.BookTransactionHistory;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class BookMapper {
                .archived(book.isArchived())
                .shareable(book.isShareable())
                .owner(book.getOwner().fullName())
-               //.cover()
+               .cover(FileUtils.readFileFromLocation(book.getBookCover()))
                .build();
     }
 

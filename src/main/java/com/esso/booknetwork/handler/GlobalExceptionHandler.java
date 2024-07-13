@@ -1,5 +1,7 @@
 package com.esso.booknetwork.handler;
 
+import com.esso.booknetwork.exception.OperationNotPermittedException;
+import com.esso.booknetwork.exception.UnauthorizedAccessException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +14,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ExceptionResponse> handleException(LockedException exp){
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
                                 .businessErrorCode(BusinessErrorCodes.ACCOUNT_LOCKED.getCode())
@@ -32,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(DisabledException exp){
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
                                 .businessErrorCode(BusinessErrorCodes.ACCOUNT_DISABLED.getCode())
@@ -46,7 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(BadCredentialsException exp){
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
                                 .businessErrorCode(BusinessErrorCodes.BAD_CREDENTIALS.getCode())
@@ -60,7 +64,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(MessagingException exp){
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(
                         ExceptionResponse.builder()
                                 .error(exp.getMessage())
@@ -77,7 +81,7 @@ public class GlobalExceptionHandler {
                     errors.add(errorMessage);
                 });
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
                                 .validationErrors(errors)
@@ -89,7 +93,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(Exception exp){
         exp.printStackTrace();
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(
                         ExceptionResponse.builder()
                                 .businessErrorDescription("Internal error, contact the admin")
@@ -97,4 +101,28 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exp){
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Internal error, contact the admin")
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ExceptionResponse> handleException(UnauthorizedAccessException  exp){
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Internal error, contact the admin")
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
 }

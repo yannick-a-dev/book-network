@@ -15,21 +15,20 @@ spring:
       database: mysql
       database-platform: org.hibernate.dialect.MySQLDialect
   mail:
-    host: localhost
-    port: 1025
-    username: esso
-    password: esso
+    host: ${EMAIL_HOSTNAME}
+    port: 465
+    username: ${EMAIL_USER_NAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
-          trust: "*"
         auth: true
+        ssl:
+          enable: true
+          trust: "*"
         starttls:
           enable: true
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
-
+    protocol: smtp
 application:
   security:
     jwt:
@@ -38,5 +37,10 @@ application:
   mailing:
     frontend:
       activation-url: http://localhost:4200/activate-account
+  cors:
+    origins: http://localhost:4200,http://localhost:8080,http://ip-address:8088
+  file:
+    upload:
+      photos-output-path: ./uploads
 server:
   port: 8088

@@ -9,7 +9,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql/data
     ports:
-      - "3306:3306"
+      - "3308:3306"
     networks:
       - spring-demo
     restart: unless-stopped
@@ -20,9 +20,18 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+
     networks:
       - spring-demo
-
+  bsn-api:
+    container_name: bsn-api
+    image: bsn/bsn:1.0.3
+    ports:
+      - 8088:8088
+    networks:
+      - spring-demo
+    depends_on:
+      - mysql
 networks:
   spring-demo:
     driver: bridge
@@ -30,3 +39,4 @@ networks:
 volumes:
   mysql:
     driver: local
+
